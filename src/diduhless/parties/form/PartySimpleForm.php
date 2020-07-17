@@ -6,7 +6,7 @@ namespace diduhless\parties\form;
 
 use diduhless\parties\session\Session;
 use jojoe77777\FormAPI\SimpleForm;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 abstract class PartySimpleForm extends SimpleForm {
 

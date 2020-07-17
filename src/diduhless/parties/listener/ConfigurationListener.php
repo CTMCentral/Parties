@@ -7,11 +7,11 @@ namespace diduhless\parties\listener;
 use diduhless\parties\session\SessionFactory;
 use diduhless\parties\utils\ConfigGetter;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
-use pocketmine\event\entity\EntityLevelChangeEvent;
+use pocketmine\event\entity\EntityTeleportEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
 use pocketmine\event\player\PlayerTransferEvent;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\Server;
 
 class ConfigurationListener implements Listener {
@@ -29,14 +29,14 @@ class ConfigurationListener implements Listener {
         }
     }
 
-    public function onLevelChange(EntityLevelChangeEvent $event): void {
+    public function onLevelChange(EntityTeleportEvent $event): void {
         $player = $event->getEntity();
         if(ConfigGetter::isWorldTeleportEnabled() and $player instanceof Player and SessionFactory::hasSession($player)) {
             $session = SessionFactory::getSession($player);
 
             if($session->isPartyLeader()) {
                 foreach($session->getParty()->getMembers() as $member) {
-                    $member->getPlayer()->teleport($event->getTarget()->getSafeSpawn());
+                    $member->getPlayer()->teleport($event->getTo()->getWorld()->getSafeSpawn());
                 }
             }
         }

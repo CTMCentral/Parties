@@ -8,11 +8,11 @@ use diduhless\parties\Parties;
 use diduhless\parties\session\SessionFactory;
 use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
-use pocketmine\command\PluginIdentifiableCommand;
-use pocketmine\Player;
+use pocketmine\player\Player;
 use pocketmine\plugin\Plugin;
+use pocketmine\plugin\PluginOwned;
 
-class PartyCommand extends Command implements PluginIdentifiableCommand {
+class PartyCommand extends Command implements PluginOwned {
 
     public function __construct() {
         parent::__construct("party", "Opens the party menu or sends a message to the party chat", null, ["p"]);
@@ -35,7 +35,7 @@ class PartyCommand extends Command implements PluginIdentifiableCommand {
         }
     }
 
-    public function getPlugin(): Plugin {
+    public function getOwningPlugin(): Plugin {
         return Parties::getInstance();
     }
 

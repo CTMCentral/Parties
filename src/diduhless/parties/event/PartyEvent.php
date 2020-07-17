@@ -7,9 +7,11 @@ namespace diduhless\parties\event;
 use diduhless\parties\party\Party;
 use diduhless\parties\session\Session;
 use pocketmine\event\Cancellable;
+use pocketmine\event\CancellableTrait;
 use pocketmine\event\Event;
 
 abstract class PartyEvent extends Event implements Cancellable {
+	use CancellableTrait;
 
     /** @var Party */
     private $party;

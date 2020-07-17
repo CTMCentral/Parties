@@ -12,7 +12,7 @@ use diduhless\parties\party\Invitation;
 use diduhless\parties\party\Party;
 use diduhless\parties\party\PartyItem;
 use diduhless\parties\utils\ColorUtils;
-use pocketmine\Player;
+use pocketmine\player\Player;
 
 class Session {
 
