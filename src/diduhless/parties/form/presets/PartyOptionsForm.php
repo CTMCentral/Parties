@@ -4,8 +4,8 @@
 namespace diduhless\parties\form\presets;
 
 
-use diduhless\parties\event\PartySetPublicEvent;
 use diduhless\parties\event\PartySetPrivateEvent;
+use diduhless\parties\event\PartySetPublicEvent;
 use diduhless\parties\event\PartyUpdateSlotsEvent;
 use diduhless\parties\form\PartyCustomForm;
 use diduhless\parties\utils\ConfigGetter;

@@ -29,15 +29,15 @@ class Parties extends PluginBase {
     }
 
     public function onEnable() {
-       $this->registerEvents(new SessionListener());
-       $this->registerEvents(new PartyEventListener());
-       $this->registerEvents(new ConfigurationListener());
-       $this->getServer()->getCommandMap()->register("parties", new PartyCommand());
-   }
+        $this->registerEvents(new SessionListener());
+        $this->registerEvents(new PartyEventListener());
+        $this->registerEvents(new ConfigurationListener());
+        $this->getServer()->getCommandMap()->register("parties", new PartyCommand());
+    }
 
-   private function registerEvents(Listener $listener): void {
-       $this->getServer()->getPluginManager()->registerEvents($listener, $this);
-   }
+    private function registerEvents(Listener $listener): void {
+        $this->getServer()->getPluginManager()->registerEvents($listener, $this);
+    }
 
     public static function getInstance(): Parties {
         return self::$instance;

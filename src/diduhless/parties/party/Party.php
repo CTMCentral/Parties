@@ -65,6 +65,7 @@ class Party {
     public function isPublic(): bool {
         return $this->public;
     }
+
     public function isFull(): bool {
         return count($this->members) >= $this->slots;
     }
