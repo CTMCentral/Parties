@@ -30,6 +30,9 @@ class ConfigurationListener implements Listener {
     }
 
     public function onLevelChange(EntityTeleportEvent $event): void {
+    	if($event->getTo()->getWorld()->getId() === $event->getFrom()->getWorld()->getId())
+    		return;
+
         $player = $event->getEntity();
         if(ConfigGetter::isWorldTeleportEnabled() and $player instanceof Player and SessionFactory::hasSession($player)) {
             $session = SessionFactory::getSession($player);
