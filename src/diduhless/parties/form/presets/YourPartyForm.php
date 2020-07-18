@@ -4,47 +4,47 @@
 namespace diduhless\parties\form\presets;
 
 
+use cosmicpe\form\entries\simple\Button;
 use diduhless\parties\event\PartyDisbandEvent;
 use diduhless\parties\event\PartyLeaveEvent;
 use diduhless\parties\form\PartySimpleForm;
 use diduhless\parties\party\PartyFactory;
+use diduhless\parties\session\Session;
+use pocketmine\player\Player;
 
 class YourPartyForm extends PartySimpleForm {
 
-    public function onCreation(): void {
-        $this->setTitle("Your Party");
-        $this->setContent("What do you want to check?");
-        $this->addButton("Members");
+    public function __construct(Session $session) {
+        parent::__construct($session, "Your Party", "What do you want to check?");
+        $this->addButton(new Button("Members"), function(Player $player, int $data) {
+            $session = $this->getSession();
+            if(!$session->hasParty())
+                return;
+            $player->sendForm(new PartyMembersForm($session));
+        });
         if($this->getSession()->isPartyLeader()) {
-            $this->addButton("Invite a player");
-            $this->addButton("Party Options");
-            $this->addButton("Disband the party");
-        } else {
-            $this->addButton("Leave the party");
-        }
-    }
-
-    public function setCallback(?int $result): void {
-        $session = $this->getSession();
-        if($result === null or !$session->hasParty()) return;
-        $player = $session->getPlayer();
-
-        switch($result) {
-            case 0:
-                $player->sendForm(new PartyMembersForm($session));
-                break;
-            case 1:
-                if($session->isPartyLeader()) {
-                    $player->sendForm(new PartyInviteForm($session));
-                } else {
-                    $this->leaveParty();
-                }
-                break;
-            case 2:
+            $this->addButton(new Button("Invite a player"), function(Player $player, int $data) {
+                $session = $this->getSession();
+                if(!$session->hasParty())
+                    return;
+                $player->sendForm(new PartyInviteForm($session));
+            });
+            $this->addButton(new Button("Party Options"), function(Player $player, int $data) {
+                $session = $this->getSession();
+                if(!$session->hasParty())
+                    return;
                 $player->sendForm(new PartyOptionsForm($session));
-                break;
-            case 3:
-                $this->disbandParty();
+            });
+            $this->addButton(new Button("Disband the party"), function(Player $player, int $data) {
+	            $this->disbandParty();
+            });
+        } else {
+            $this->addButton(new Button("Leave the party"), function(Player $player, int $data) {
+                $session = $this->getSession();
+                if(!$session->hasParty())
+                    return;
+                $this->leaveParty();
+            });
         }
     }
 

@@ -4,17 +4,18 @@
 namespace diduhless\parties\form\presets;
 
 
+use cosmicpe\form\entries\simple\Button;
 use diduhless\parties\form\PartySimpleForm;
 use diduhless\parties\session\Session;
+use pocketmine\player\Player;
 
 class PartyMembersForm extends PartySimpleForm {
 
     /** @var Session[] */
     private $members;
 
-    public function onCreation(): void {
-        $this->setTitle("Party Members");
-        $this->setContent("Current members in your party:");
+    public function __construct(Session $session) {
+        parent::__construct($session, "Party Members", "Current members in your party:");
 
         $session = $this->getSession();
         $members = $session->getParty()->getMembers();
@@ -24,21 +25,19 @@ class PartyMembersForm extends PartySimpleForm {
 
         $this->members = $members;
         foreach($this->members as $member) {
-            $this->addButton($member->getUsername());
-        }
-    }
+            $this->addButton(new Button($member->getUsername()), function(Player $player, int $data) {
+                $session = $this->getSession();
+                if(!$session->hasParty())
+                    return;
 
-    public function setCallback(?int $result): void {
-        $session = $this->getSession();
-        if($result === null or !$session->hasParty()) return;
+                $member = $this->members[$data];
 
-        $player = $session->getPlayer();
-        $member = $this->members[$result];
-
-        if($session->isPartyLeader() and !$member->isPartyLeader()) {
-            $player->sendForm(new PartyMemberForm($member, $session));
-        } else {
-            $player->sendForm(new PartyMembersForm($session));
+                if($session->isPartyLeader() and !$member->isPartyLeader()) {
+                    $player->sendForm(new PartyMemberForm($member, $session));
+                } else {
+                    $player->sendForm(new PartyMembersForm($session));
+                }
+            });
         }
     }
 }

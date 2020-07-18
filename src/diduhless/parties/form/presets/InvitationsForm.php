@@ -4,38 +4,30 @@
 namespace diduhless\parties\form\presets;
 
 
+use cosmicpe\form\entries\simple\Button;
 use diduhless\parties\form\PartySimpleForm;
 use diduhless\parties\party\Invitation;
+use diduhless\parties\session\Session;
+use pocketmine\player\Player;
 
 class InvitationsForm extends PartySimpleForm {
 
     /** @var Invitation[] */
     private $invitations;
 
-    public function onCreation(): void {
+    public function __construct(Session $session) {
         $this->invitations = $this->getSession()->getInvitations();
-
-        $this->setTitle("Party Invitations");
-        if(empty($this->invitations)) {
-            $this->setContent("You do not have any invitations! :(");
-        } else {
-            $this->setContent("These are your party invitations:");
-            foreach($this->invitations as $invitation) {
-                $this->addButton($invitation->getSender()->getUsername() . "'s Party");
-            }
+        $content = empty($this->invitations) ? "You do not have any invitations! :(" : "These are your party invitations:";
+        parent::__construct($session, "Party Invitations", $content);
+        foreach($this->invitations as $invitation) {
+            $this->addButton(new Button($invitation->getSender()->getUsername() . "'s Party"), function(Player $player, int $data) {
+                $session = $this->getSession();
+                $player->sendForm(new ConfirmInvitationForm(array_values($this->invitations)[$data], $session));
+            });
         }
-        $this->addButton("Go back");
-    }
-
-    public function setCallback(?int $result): void {
-        $session = $this->getSession();
-        if($result === null) {
-            return;
-        } elseif((empty($this->invitations) and $result === 0) or (!empty($this->invitations) and $result === count($this->invitations))) {
-            $session->openPartyForm();
-        } else {
+        $this->addButton(new Button("Go Back"), function(Player $player, int $data) {
             $session = $this->getSession();
-            $session->getPlayer()->sendForm(new ConfirmInvitationForm(array_values($this->invitations)[$result], $session));
-        }
+            $session->openPartyForm();
+        });
     }
 }

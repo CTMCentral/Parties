@@ -4,34 +4,27 @@
 namespace diduhless\parties\form\presets;
 
 
+use cosmicpe\form\entries\simple\Button;
 use diduhless\parties\event\PartyCreateEvent;
 use diduhless\parties\form\PartySimpleForm;
 use diduhless\parties\party\Party;
 use diduhless\parties\party\PartyFactory;
+use diduhless\parties\session\Session;
+use pocketmine\player\Player;
 
 class PartyMenuForm extends PartySimpleForm {
 
-    public function onCreation(): void {
-        $this->setTitle("Party Menu");
-        $this->setContent("You do not have a party! Create a party or accept an invitation to join a party.");
-        $this->addButton("Create a party");
-        $this->addButton("Join a public party");
-        $this->addButton("Invitations [" . count($this->getSession()->getInvitations()) . "]");
-    }
-
-    public function setCallback(?int $result): void {
-        if($result === null) return;
-        switch($result) {
-            case 0:
-                $this->onPartyCreate();
-                break;
-            case 1:
-                $this->onOpenPublicParties();
-                break;
-            case 2:
-                $this->onOpenInvitations();
-                break;
-        }
+    public function __construct(Session $session) {
+        parent::__construct($session, "Party Menu", "You do not have a party! Create a party or accept an invitation to join a party.");
+        $this->addButton(new Button("Create a party"), function(Player $player, int $data) {
+            $this->onPartyCreate();
+        });
+        $this->addButton(new Button("Join a public party"), function(Player $player, int $data) {
+            $this->onOpenPublicParties();
+        });
+        $this->addButton(new Button("Invitations [" . count($this->getSession()->getInvitations()) . "]"), function(Player $player, int $data) {
+            $this->onOpenInvitations();
+        });
     }
 
     private function onPartyCreate(): void {

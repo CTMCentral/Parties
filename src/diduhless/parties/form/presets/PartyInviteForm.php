@@ -4,20 +4,26 @@
 namespace diduhless\parties\form\presets;
 
 
+use cosmicpe\form\entries\custom\CustomFormEntry;
+use cosmicpe\form\entries\custom\DropdownEntry;
+use cosmicpe\form\entries\custom\InputEntry;
 use diduhless\parties\event\PartyInviteEvent;
 use diduhless\parties\form\PartyCustomForm;
 use diduhless\parties\party\Invitation;
 use diduhless\parties\session\Session;
 use diduhless\parties\session\SessionFactory;
+use pocketmine\player\Player;
 
 class PartyInviteForm extends PartyCustomForm {
 
     /** @var Session[] */
     private $sessions = [];
 
-    public function onCreation(): void {
-        $this->setTitle("Invite a player");
-        $this->addInput("Write the name of the player:");
+    public function __construct(Session $session) {
+        parent::__construct($session, "Invite a player");
+        $this->addEntry(new InputEntry("Write the name of the player:"), function(Player $player, CustomFormEntry $entry, $data) {
+            $this->attemptToInvite($data);
+        });
 
         $usernames = [];
         foreach(SessionFactory::getSessions() as $session) {
@@ -27,24 +33,9 @@ class PartyInviteForm extends PartyCustomForm {
             }
         }
         if(!empty($this->sessions)) {
-            $this->addDropdown("Select an online player:", $usernames);
-        }
-    }
-
-    public function setCallback(?array $options): void {
-        if($options === null) {
-            return;
-        } elseif(isset($options[0]) and !empty($options[0])) {
-            $this->attemptToInvite($options[0]);
-        } else {
-            $value = 1;
-            foreach($this->sessions as $target) {
-                if(isset($options[$value])) {
-                    $this->attemptToInvite($target->getUsername());
-                    return;
-                }
-                $value++;
-            }
+            $this->addEntry(new DropdownEntry("Select an online player:", $usernames), function(Player $player, CustomFormEntry $entry, $data) use($usernames) {
+                $this->attemptToInvite($usernames[$data]);
+            });
         }
     }
 
