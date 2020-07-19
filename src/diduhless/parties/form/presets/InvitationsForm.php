@@ -16,7 +16,7 @@ class InvitationsForm extends PartySimpleForm {
     private $invitations;
 
     public function __construct(Session $session) {
-        $this->invitations = $this->getSession()->getInvitations();
+        $this->invitations = $session->getInvitations();
         $content = empty($this->invitations) ? "You do not have any invitations! :(" : "These are your party invitations:";
         parent::__construct($session, "Party Invitations", $content);
         foreach($this->invitations as $invitation) {

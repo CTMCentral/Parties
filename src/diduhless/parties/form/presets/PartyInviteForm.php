@@ -33,7 +33,7 @@ class PartyInviteForm extends PartyCustomForm {
             }
         }
         if(!empty($this->sessions)) {
-            $this->addEntry(new DropdownEntry("Select an online player:", $usernames), function(Player $player, CustomFormEntry $entry, $data) use($usernames) {
+            $this->addEntry(new DropdownEntry("Select an online player:", ...$usernames), function(Player $player, CustomFormEntry $entry, $data) use($usernames) {
                 $this->attemptToInvite($usernames[$data]);
             });
         }
