@@ -15,7 +15,7 @@ use pocketmine\player\Player;
 class YourPartyForm extends PartySimpleForm {
 
     public function __construct(Session $session) {
-        parent::__construct($session, "Your Party", "What do you want to check?");
+        parent::__construct($session, "Your FriendsList", "What do you want to check?");
         $this->addButton(new Button("Members"), function(Player $player, int $data) {
             $session = $this->getSession();
             if(!$session->hasParty())
@@ -29,7 +29,7 @@ class YourPartyForm extends PartySimpleForm {
                     return;
                 $player->sendForm(new PartyInviteForm($session));
             });
-            $this->addButton(new Button("Party Options"), function(Player $player, int $data) {
+            $this->addButton(new Button("FriendsList Options"), function(Player $player, int $data) {
                 $session = $this->getSession();
                 if(!$session->hasParty())
                     return;

@@ -22,7 +22,7 @@ class PublicPartiesForm extends PartySimpleForm {
         foreach($parties as $party) {
             if($party->isPublic() and !$party->isFull()) {
                 $this->parties[] = $party;
-                $this->addButton(new Button($party->getLeaderName() . "'s Party"), function(Player $player, int $data) {
+                $this->addButton(new Button($party->getLeaderName() . "'s FriendsList"), function(Player $player, int $data) {
                     $session = $this->getSession();
                     $party = array_values($this->parties)[$data];
                     $player->sendForm(new ConfirmInvitationForm(new Invitation($party->getLeader(), $session, $party->getId()), $session));

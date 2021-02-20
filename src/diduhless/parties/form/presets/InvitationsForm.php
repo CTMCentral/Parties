@@ -18,9 +18,9 @@ class InvitationsForm extends PartySimpleForm {
     public function __construct(Session $session) {
         $this->invitations = $session->getInvitations();
         $content = empty($this->invitations) ? "You do not have any invitations! :(" : "These are your party invitations:";
-        parent::__construct($session, "Party Invitations", $content);
+        parent::__construct($session, "FriendsList Invitations", $content);
         foreach($this->invitations as $invitation) {
-            $this->addButton(new Button($invitation->getSender()->getUsername() . "'s Party"), function(Player $player, int $data) {
+            $this->addButton(new Button($invitation->getSender()->getUsername() . "'s FriendsList"), function(Player $player, int $data) {
                 $session = $this->getSession();
                 $player->sendForm(new ConfirmInvitationForm(array_values($this->invitations)[$data], $session));
             });

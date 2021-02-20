@@ -8,11 +8,15 @@ use diduhless\parties\session\SessionFactory;
 use diduhless\parties\utils\ConfigGetter;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\event\entity\EntityTeleportEvent;
+use pocketmine\event\inventory\InventoryTransactionEvent;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerCommandPreprocessEvent;
+use pocketmine\event\player\PlayerJoinEvent;
+use pocketmine\event\player\PlayerRespawnEvent;
 use pocketmine\event\player\PlayerTransferEvent;
 use pocketmine\player\Player;
 use pocketmine\Server;
+use pocketmine\world\World;
 
 class ConfigurationListener implements Listener {
 
@@ -20,56 +24,95 @@ class ConfigurationListener implements Listener {
         $entity = $event->getEntity();
         $damager = $event->getDamager();
 
-        if(ConfigGetter::isPvpDisabled() and $entity instanceof Player and $damager instanceof Player and SessionFactory::hasSession($damager)) {
-            $session = SessionFactory::getSession($damager);
-
-            if($session->hasParty() and $session->getParty()->hasMemberByName($entity->getName())) {
-                $event->setCancelled();
-            }
+        if(!$entity instanceof Player or !$damager instanceof Player) {
+            return;
+        }
+        $session = SessionFactory::getSession($damager);
+        if(!$session->hasParty()) {
+            return;
+        }
+        $party = $session->getParty();
+        if(!$party->isPvp() and $party->hasMemberByName($entity->getName())) {
+            $event->setCancelled();
         }
     }
 
     public function onLevelChange(EntityTeleportEvent $event): void {
-    	if($event->getTo()->getWorld()->getId() === $event->getFrom()->getWorld()->getId())
-    		return;
-
-        $player = $event->getEntity();
-        if(ConfigGetter::isWorldTeleportEnabled() and $player instanceof Player and SessionFactory::hasSession($player)) {
-            $session = SessionFactory::getSession($player);
-
-            if($session->isPartyLeader()) {
-                foreach($session->getParty()->getMembers() as $member) {
-                    $member->getPlayer()->teleport($event->getTo()->getWorld()->getSafeSpawn());
+        $entity = $event->getEntity();
+        if(!$entity instanceof Player) {
+            return;
+        }
+        $this->checkPartyItem($entity, $event->getTo()->getWorld());
+        $session = SessionFactory::getSession($entity);
+        if(!$session->isPartyLeader()) {
+            return;
+        }
+        $party = $session->getParty();
+        if($party->isLeaderWorldTeleport()) {
+            foreach($party->getMembers() as $member) {
+                if(!$member->isPartyLeader()) {
+                    $member->getPlayer()->teleport($event->getTo());
                 }
             }
         }
     }
 
     public function onTransfer(PlayerTransferEvent $event): void {
-        $player = $event->getPlayer();
-        if(ConfigGetter::isTransferTeleportEnabled() and SessionFactory::hasSession($player)) {
-            $session = SessionFactory::getSession($player);
-
-            if($session->isPartyLeader()) {
-                foreach($session->getParty()->getMembers() as $member) {
-                    $member->getPlayer()->transfer($event->getAddress(), $event->getPort(), $event->getMessage());
-                }
+        if(!ConfigGetter::isTransferTeleportEnabled()) {
+            return;
+        }
+        $session = SessionFactory::getSession($event->getPlayer());
+        if($session->isPartyLeader()) {
+            return;
+        }
+        foreach($session->getParty()->getMembers() as $member) {
+            if(!$member->isPartyLeader()) {
+                $member->getPlayer()->transfer($event->getAddress(), $event->getPort(), $event->getMessage());
             }
         }
     }
 
     public function onCommandPreprocess(PlayerCommandPreprocessEvent $event): void {
-        $player = $event->getPlayer();
-        $commandLine = str_replace("/", "", $event->getMessage());
-
-        if(ConfigGetter::areLeaderCommandsEnabled() and in_array($commandLine, ConfigGetter::getSelectedCommands()) and SessionFactory::hasSession($player)) {
-            $session = SessionFactory::getSession($player);
-
-            if($session->isPartyLeader()) {
-                foreach($session->getParty()->getMembers() as $member) {
-                    Server::getInstance()->dispatchCommand($member->getPlayer(), $commandLine);
+        if(!ConfigGetter::areLeaderCommandsEnabled()) {
+            return;
+        }
+        $command = str_replace("/", "", $event->getMessage());
+        if(!in_array($command, ConfigGetter::getSelectedCommands())) {
+            return;
+        }
+        $session = SessionFactory::getSession($event->getPlayer());
+        if($session->isPartyLeader()) {
+            foreach($session->getParty()->getMembers() as $member) {
+                if(!$member->isPartyLeader()) {
+                    Server::getInstance()->dispatchCommand($member->getPlayer(), $command);
                 }
             }
+        }
+    }
+
+    public function onTransaction(InventoryTransactionEvent $event): void {
+        if(ConfigGetter::isPartyItemFixed()) {
+            foreach($event->getTransaction()->getActions() as $action) {
+                if($action->getSourceItem()->getNamedTag()->hasTag("parties")) {
+                    $event->setCancelled();
+                }
+            }
+        }
+    }
+
+    public function onJoin(PlayerJoinEvent $event): void {
+        $player = $event->getPlayer();
+        $this->checkPartyItem($player, $player->getWorld());
+    }
+
+    public function onRespawn(PlayerRespawnEvent $event): void {
+        $player = $event->getPlayer();
+        $this->checkPartyItem($player, $event->getRespawnPosition()->getWorld());
+    }
+
+    private function checkPartyItem(Player $player, World $level): void {
+        if(ConfigGetter::isPartyItemEnabled() and in_array($level->getFolderName(), ConfigGetter::getPartyItemWorldNames())) {
+            SessionFactory::getSession($player)->givePartyItem(ConfigGetter::getPartyItemIndex());
         }
     }
 

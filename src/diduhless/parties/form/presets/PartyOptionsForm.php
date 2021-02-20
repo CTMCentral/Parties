@@ -19,7 +19,7 @@ use pocketmine\player\Player;
 class PartyOptionsForm extends PartyCustomForm {
 
     public function __construct(Session $session) {
-        parent::__construct($session, "Party Options");
+        parent::__construct($session, "FriendsList Options");
 	    $party = $session->getParty();
         $this->addEntry(new LabelEntry("Change the party options in this window."));
         $this->addEntry(new ToggleEntry("Do you want to set your party public?", $party->isPublic()), function(Player $player, CustomFormEntry $entry, $data) {

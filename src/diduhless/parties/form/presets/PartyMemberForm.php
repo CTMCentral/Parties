@@ -19,7 +19,7 @@ class PartyMemberForm extends PartySimpleForm {
 
     public function __construct(Session $member, Session $session) {
         $this->member = $member;
-        parent::__construct($session, "Party Member", "What do you want to do with this member?");
+        parent::__construct($session, "FriendsList Member", "What do you want to do with this member?");
         $this->addButton(new Button("Kick him from the party"), function(Player $player, int $data) {
             $session = $this->getSession();
             if(!$session->isPartyLeader() or SessionFactory::getSession($this->member->getPlayer()) === null)

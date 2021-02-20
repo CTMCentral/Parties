@@ -15,7 +15,7 @@ class PartyMembersForm extends PartySimpleForm {
     private $members;
 
     public function __construct(Session $session) {
-        parent::__construct($session, "Party Members", "Current members in your party:");
+        parent::__construct($session, "FriendsList Members", "Current members in your party:");
 
         $session = $this->getSession();
         $members = $session->getParty()->getMembers();

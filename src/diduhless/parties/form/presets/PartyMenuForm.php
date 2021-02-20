@@ -15,7 +15,7 @@ use pocketmine\player\Player;
 class PartyMenuForm extends PartySimpleForm {
 
     public function __construct(Session $session) {
-        parent::__construct($session, "Party Menu", "You do not have a party! Create a party or accept an invitation to join a party.");
+        parent::__construct($session, "FriendsList Menu", "You do not have a party! Create a party or accept an invitation to join a party.");
         $this->addButton(new Button("Create a party"), function(Player $player, int $data) {
             $this->onPartyCreate();
         });
