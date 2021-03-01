@@ -33,7 +33,7 @@ class ConfigurationListener implements Listener {
         }
         $party = $session->getParty();
         if(!$party->isPvp() and $party->hasMemberByName($entity->getName())) {
-            $event->setCancelled();
+            $event->cancel();
         }
     }
 
@@ -94,7 +94,7 @@ class ConfigurationListener implements Listener {
         if(ConfigGetter::isPartyItemFixed()) {
             foreach($event->getTransaction()->getActions() as $action) {
                 if($action->getSourceItem()->getNamedTag()->hasTag("parties")) {
-                    $event->setCancelled();
+                    $event->cancel();
                 }
             }
         }
