@@ -18,7 +18,7 @@ class Parties extends PluginBase {
     /** @var Parties */
     static private $instance;
 
-    public function onLoad() {
+    public function onLoad() : void {
         self::$instance = $this;
 
         $dataFolder = $this->getDataFolder();
@@ -28,7 +28,7 @@ class Parties extends PluginBase {
         $this->saveDefaultConfig();
     }
 
-    public function onEnable() {
+    public function onEnable() : void {
        $this->registerEvents(new SessionListener());
        $this->registerEvents(new PartyEventListener());
        $this->registerEvents(new ConfigurationListener());

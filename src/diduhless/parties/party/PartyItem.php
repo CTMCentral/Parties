@@ -5,9 +5,9 @@ namespace diduhless\parties\party;
 
 
 use diduhless\parties\session\SessionFactory;
+use diduhless\parties\utils\ConfigGetter;
 use pocketmine\item\Item;
 use pocketmine\item\ItemIdentifier;
-use pocketmine\item\ItemIds;
 use pocketmine\item\ItemUseResult;
 use pocketmine\math\Vector3;
 use pocketmine\player\Player;
@@ -16,8 +16,10 @@ use pocketmine\utils\TextFormat;
 class PartyItem extends Item {
 
     public function __construct() {
-        $this->setCustomName(TextFormat::GREEN . "Party");
-        parent::__construct(new ItemIdentifier(ItemIds::HEART_OF_THE_SEA, 0), "Party");
+        $item = ConfigGetter::getPartyItemValues();
+        $this->setCustomName(TextFormat::GREEN . $item[2]);
+        $this->getNamedTag()->setString("parties", "parties");
+        parent::__construct(new ItemIdentifier($item[0], $item[1]), $item[2]);
     }
 
     public function onClickAir(Player $player, Vector3 $directionVector): ItemUseResult {

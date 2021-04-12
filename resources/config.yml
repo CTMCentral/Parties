@@ -8,11 +8,15 @@
 # These are the maximum party slots
 maximum-party-slots: 8
 
+# Do you want this option to be displayed on the party options form so party leaders can enable or disable it?
+show-disable-pvp-with-party-members-option: true
+show-teleport-members-to-leader-on-change-world-option: true
+
 # Do you want to disable the pvp (player versus player) damage between the party members?
-disable-pvp-with-party-members: true
+default-disable-pvp-with-party-members: true
 
 # Do you want to teleport all the party members to the leader when the leader goes to another world?
-teleport-members-to-leader-on-change-world: true
+default-teleport-members-to-leader-on-change-world: true
 
 # Do you want to teleport all the party members to the leader gets teleported to another server?
 # To transfer a player to another server, use Player->transfer()
@@ -25,3 +29,21 @@ enable-leader-commands: true
 selected-leader-commands:
   - "tp diduhless didah"
   - "yourcommand"
+
+# The party item is an item that is set to the player when he joins the server.
+# Interacting with the party item opens the parties form (same as /party).
+give-party-item: true
+# If this option is enabled, players won't be able to move or drop the party item from their inventory.
+fix-party-item: true
+# This is the index where the party item will be set.
+# For example, if you want to set the item to the 9th slot, you will have to put 8. (indexes start at 0 instead of 1)
+party-item-index: 8
+# The party item will only be given when a player moves to any of these worlds (uppercases matter).
+party-item-worlds:
+  - "worldname"
+  - "didah"
+# These three values represent: item id, item meta and item custom name.
+party-item:
+  - 467
+  - 0
+  - "Party"
